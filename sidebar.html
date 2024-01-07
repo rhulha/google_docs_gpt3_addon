@@ -38,82 +38,15 @@
     <div class="sidebar branding-below">
       <form>
         <div class="block">
-          <input type="password" name="accessKeyId" id="accessKeyId" />
-          <label for="accessKeyId">AWS AccessKeyId</label>
-        </div>
-        <div class="block">
           <input type="password" name="secretAccessKey" id="secretAccessKey" />
-          <label for="secretAccessKey">AWS SecretAccessKey</label>
-        </div>
-        <div class="block col-contain">
-          <div class="col-one">
-            <b>Language</b>
-            <div>
-              <input
-                type="radio"
-                name="lang"
-                id="radio-lang-en"
-                value="en"
-                checked="checked"
-              />
-              <label for="radio-lang-en">English</label>
-            </div>
-            <div>
-              <input type="radio" name="lang" id="radio-lang-de" value="de" />
-              <label for="radio-lang-de">German</label>
-            </div>
-            <div>
-              <input type="radio" name="lang" id="radio-lang-fr" value="fr" />
-              <label for="radio-lang-fr">French</label>
-            </div>
-            <div>
-              <input type="radio" name="lang" id="radio-lang-ja" value="ja" />
-              <label for="radio-lang-ja">Japanese</label>
-            </div>
-            <div>
-              <input type="radio" name="lang" id="radio-lang-es" value="es" />
-              <label for="radio-lang-es">Spanish</label>
-            </div>
-          </div>
-          <div>
-            <b>Voice</b>
-            <div class="radio-spacer"></div>
-            <div>
-              <input
-                type="radio"
-                name="voice"
-                id="radio-voice-mat"
-                value="Matthew"
-                checked="checked"
-              />
-              <label for="radio-voice-mat">Matthew</label>
-            </div>
-            <div>
-              <input
-                type="radio"
-                name="voice"
-                id="radio-voice-joanna"
-                value="Joanna"
-              />
-              <label for="radio-voice-joanna">Joanna</label>
-            </div>
-            <div>
-              <input
-                type="radio"
-                name="voice"
-                id="radio-voice-salli"
-                value="Salli"
-              />
-              <label for="radio-voice-salli">Salli</label>
-            </div>
-          </div>
+          <label for="secretAccessKey">SecretAccessKey</label>
         </div>
         <div class="block form-group">
-          <textarea class="width-100" id="completed-text" rows="10"></textarea>
+          <textarea class="width-100" id="story-synopsis" rows="10" placeholder="story synopsis"></textarea>
         </div>
         <div class="block" id="button-bar">
           <button class="blue" id="run-gpt3">
-            Complete Selected Text using GPT3
+            Complete (Selected) Text using GPT3
           </button>
         </div>
       </form>
@@ -127,7 +60,7 @@
         width="27"
         height="27"
       />
-      <span class="gray branding-text">Text To Speech</span>
+      <span class="gray branding-text">LLM Text Completion</span>
     </div>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -139,9 +72,6 @@
       });
 
       function loadPrefs(prefs) {
-        $('input:radio[name="lang"]').filter("[value=" + prefs.lang + "]").attr("checked", true);
-        $('input:radio[name="voice"]').filter("[value=" + prefs.voice + "]").attr("checked", true);
-        $("input[name=accessKeyId]").val(prefs.accessKeyId);
         $("input[name=secretAccessKey]").val(prefs.secretAccessKey);
       }
 
@@ -183,7 +113,7 @@
         //showError(text, $("#button-bar"));
 
         var params = {
-          model: "text-davinci-003",
+          model: "gpt-3.5-turbo-instruct",
           prompt: text,
           temperature: 0,
           max_tokens: 1000,
@@ -211,9 +141,6 @@
 
       function savePrefs(prefs) {
         var prefs = {
-          lang: $("input[name=lang]:checked").val(),
-          voice: $("input[name=voice]:checked").val(),
-          accessKeyId: $("input[name=accessKeyId]").val(),
           secretAccessKey: $("input[name=secretAccessKey]").val(),
         };
         google.script.run
@@ -230,6 +157,10 @@
         $("#error").remove();
 
         savePrefs();
+
+        // the order is weird.
+        // First we call getCompleteText()
+        // Then on success we call complete(text)
 
         google.script.run
           .withSuccessHandler(function (text, element) {

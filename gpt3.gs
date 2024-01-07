@@ -32,31 +32,29 @@ function test() {
 function insertText(text) {
   var body = DocumentApp.getActiveDocument().getBody();
   var range = body.findText("\\[insert\\]");
-  var el = range.getElement();
-  var t = el.asText();
-  if( t.getText() == "[insert]") {
-    t.setText("[insert]\m" + text + "\n[insert end]\n");
+  if( range != null ) {
+    var el = range.getElement();
+    var t = el.asText();
+    if( t.getText() == "[insert]") {
+      t.setText("[insert]\m" + text + "\n[insert end]\n");
+    } else {
+      console.log("[insert] not found");
+    }
   } else {
-    console.log("[insert] not found");
+    const cursor = DocumentApp.getActiveDocument().getCursor();
+    cursor.insertText(text);
+
   }
-  //const cursor = DocumentApp.getActiveDocument().getCursor();
-  //cursor.insertText(text);
 }
 
 function getPrefs() {
   var up = PropertiesService.getUserProperties();
   return {
-    lang: up.getProperty("lang"),
-    voice: up.getProperty("voice"),
-    accessKeyId: up.getProperty("accessKeyId"),
     secretAccessKey: up.getProperty("secretAccessKey"),
   };
 }
 
 function savePrefs(prefs) {
   PropertiesService.getUserProperties()
-    .setProperty("lang", prefs.lang)
-    .setProperty("voice", prefs.voice)
-    .setProperty("accessKeyId", prefs.accessKeyId)
     .setProperty("secretAccessKey", prefs.secretAccessKey);
 }
