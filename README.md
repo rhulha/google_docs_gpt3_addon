@@ -1,1 +1,1 @@
-# google_docs_gpt3_addon
+Complete your Google Docs using ChatGPT
